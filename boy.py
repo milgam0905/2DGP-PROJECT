@@ -72,12 +72,25 @@ class Walk:
         else:
             self.boy.walk_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
+class Attack1:
+    def __init__(self, boy):
+        self.boy = boy
+    def enter(self, e):
+        pass
+    def exit(self, e):
+        pass
+    def do(self):
+        self.boy.frame = (self.boy.frame + 1) % 6
+    def draw(self):
+        self.boy.attack1_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+
 class Boy:
     def __init__(self):
         self.x = 800
         self.y = 300
         self.walk_image = load_image('character_Walk.png')
         self.idle_image = load_image('character_Idle.png')
+        self.attack1_image = load_image('character_Attack_1.png')
         self.frame = 0
         self.xdir = 0
         self.ydir = 0
@@ -85,11 +98,12 @@ class Boy:
 
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
+        self.ATTACK1 = Attack1(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
-                self.IDLE : {right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK, up_down: self.WALK, down_down: self.WALK, up_up: self.WALK, down_up: self.WALK},
-                self.WALK : {space_down: self.IDLE, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE}
+                self.IDLE : {space_down: self.ATTACK1, right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK, up_down: self.WALK, down_down: self.WALK, up_up: self.WALK, down_up: self.WALK},
+                self.WALK : {space_down: self.ATTACK1, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE}
             }
         )
 
