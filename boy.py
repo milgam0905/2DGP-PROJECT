@@ -1,8 +1,5 @@
 from pico2d import *
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
-import game_world
-import game_framework
-
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_UP, SDLK_DOWN
 
 from state_machine import StateMachine
 
@@ -89,6 +86,7 @@ class Attack1:
             self.boy.attack1_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 
+
 class Boy:
     def __init__(self):
         self.x = 800
@@ -101,18 +99,18 @@ class Boy:
         self.ydir = 0
         self.face_dir = 1
 
-
         self.keys = set()
 
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
         self.ATTACK1 = Attack1(self)
+
         self.state_machine = StateMachine(
             self.IDLE,
             {
-                self.IDLE : {space_down: self.ATTACK1, right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK, up_down: self.WALK, down_down: self.WALK, up_up: self.WALK, down_up: self.WALK},
-                self.WALK : {space_down: self.ATTACK1, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE},
-                self.ATTACK1 : {time_out: self.IDLE}
+                self.IDLE: {space_down: self.ATTACK1},
+                self.WALK: {space_down: self.ATTACK1},
+                self.ATTACK1: {time_out: self.IDLE}
             }
         )
 
@@ -137,6 +135,31 @@ class Boy:
         self.state_machine.draw()
 
     def update(self):
+        self.update_direction()
+
+        if (self.xdir != 0 or self.ydir != 0):
+            if self.state_machine.cur_state is not self.WALK:
+                try:
+                    self.state_machine.cur_state.exit(('AUTO', None))
+                except Exception:
+                    pass
+                self.state_machine.cur_state = self.WALK
+                try:
+                    self.state_machine.cur_state.enter(('AUTO', None))
+                except Exception:
+                    pass
+        else:
+            if self.state_machine.cur_state is not self.IDLE:
+                try:
+                    self.state_machine.cur_state.exit(('AUTO', None))
+                except Exception:
+                    pass
+                self.state_machine.cur_state = self.IDLE
+                try:
+                    self.state_machine.cur_state.enter(('AUTO', None))
+                except Exception:
+                    pass
+
         self.state_machine.update()
 
     def get_bb(self):
