@@ -1,6 +1,7 @@
 from pico2d import *
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_UP, SDLK_DOWN
 
+import game_framework
 from state_machine import StateMachine
 
 
@@ -33,6 +34,12 @@ def down_up(e):
 
 time_out = lambda e: e[0] == 'TIMEOUT'
 
+PIXEL_PER_METER = (10.0 / 0.3)
+WALK_SPEED_MPS = 1.4
+WALK_SPEED_PPS = (WALK_SPEED_MPS * PIXEL_PER_METER)
+
+
+
 class Idle:
     def __init__(self, boy):
         self.boy = boy
@@ -44,9 +51,9 @@ class Idle:
         self.boy.frame = (self.boy.frame + 1) % 6
     def draw(self):
         if self.boy.face_dir == 1:
-            self.boy.idle_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+            self.boy.idle_image.clip_draw(int(self.boy.frame) * 128, 0, 128, 128, self.boy.x, self.boy.y)
         else:
-            self.boy.idle_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
+            self.boy.idle_image.clip_composite_draw(int(self.boy.frame) * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 class Walk:
     def __init__(self, boy):
@@ -58,14 +65,14 @@ class Walk:
         self.boy.xdir = 0
         self.boy.ydir = 0
     def do(self):
-        self.boy.frame = (self.boy.frame + 1) % 8
-        self.boy.x = self.boy.x + self.boy.xdir * 5
-        self.boy.y = self.boy.y + self.boy.ydir * 5
+        self.boy.frame = (self.boy.frame + 8 * 1 * game_framework.frame_time) % 8
+        self.boy.x = self.boy.x + self.boy.xdir * WALK_SPEED_PPS * game_framework.frame_time
+        self.boy.y = self.boy.y + self.boy.ydir * WALK_SPEED_PPS * game_framework.frame_time
     def draw(self):
         if self.boy.face_dir == 1:
-            self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+            self.boy.walk_image.clip_draw(int(self.boy.frame) * 128, 0, 128, 128, self.boy.x, self.boy.y)
         else:
-            self.boy.walk_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
+            self.boy.walk_image.clip_composite_draw(int(self.boy.frame) * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 class Attack1:
     def __init__(self, boy):
