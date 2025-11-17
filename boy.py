@@ -34,6 +34,8 @@ def down_down(e):
 def down_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_DOWN
 
+time_out = lambda e: e[0] == 'TIMEOUT'
+
 class Idle:
     def __init__(self, boy):
         self.boy = boy
@@ -78,9 +80,12 @@ class Attack1:
     def enter(self, e):
         pass
     def exit(self, e):
-        pass
+        self.boy.frame = 0
     def do(self):
-        self.boy.frame = (self.boy.frame + 1) % 6
+        self.boy.frame = (self.boy.frame + 1) % 7
+        delay(0.2)
+        if self.boy.frame == 6:
+            self.boy.state_machine.handle_state_event(('TIMEOUT', None))
     def draw(self):
         self.boy.attack1_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
 
@@ -103,7 +108,8 @@ class Boy:
             self.IDLE,
             {
                 self.IDLE : {space_down: self.ATTACK1, right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK, up_down: self.WALK, down_down: self.WALK, up_up: self.WALK, down_up: self.WALK},
-                self.WALK : {space_down: self.ATTACK1, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE}
+                self.WALK : {space_down: self.ATTACK1, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE},
+                self.ATTACK1 : {time_out: self.IDLE}
             }
         )
 
