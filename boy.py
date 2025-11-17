@@ -1,19 +1,60 @@
 from pico2d import *
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
+import game_world
+import game_framework
+
+
+from state_machine import StateMachine
+
+class Idle::
+    def __init__(self, boy):
+        self.boy = boy
+    def enter(self, e):
+        pass
+    def exit(self, e):
+        pass
+    def do(self):
+        self.boy.frame = (self.boy.frame + 1) % 6
+        delay(0.2)
+    def draw(self):
+        self.boy.idle_image.clip_draw(self.boy,frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+
+class Walk:
+    def __init__(self, boy):
+        self.boy = boy
+
+    def enter(self, e):
+        pass
+    def exit(self, e):
+        pass
+    def do(self):
+        self.boy.frame = (self.boy.frame + 1) % 8
+        delay(0.2)
+    def draw(self):
+        self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
 
 class Boy:
     def __init__(self):
         self.x = 800
         self.y = 300
-        self.image = load_image('character_Walk.png')
+        self.walk_image = load_image('character_Walk.png')
+        self.idle_image = load_image('character_Idle.png')
         self.frame = 0
 
-    def draw(self):
-        # frame은 인덱스(0..7) 이므로, 실제 픽셀 좌표로 변환해서 전달해야 합니다.
-        self.image.clip_draw(self.frame * 128, 0, 128, 128, self.x, self.y)
+        self.IDLE = Idle(self)
+        self.WALK = Walk(self)
+        self.state_machine = StateMachine(
+            self.IDLE,
+            {
+                self.IDLE : { 'walk' : self.WALK },
+                self.WALK : { 'idle' : self.IDLE}
+            }
+        )
 
+    def draw(self):
+        self.state_machine.draw()
     def update(self):
-        self.frame = (self.frame + 1) % 8
-        delay(0.2)
+        self.state_machine.update()
 
     def get_bb(self):
         return self.x - 25, self.y - 50, self.x + 25, self.y + 50
