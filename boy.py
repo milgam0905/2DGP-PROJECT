@@ -28,6 +28,12 @@ def up_down(e):
 def up_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_UP
 
+def down_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_DOWN
+
+def down_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_DOWN
+
 class Idle:
     def __init__(self, boy):
         self.boy = boy
@@ -45,15 +51,21 @@ class Walk:
         self.boy = boy
 
     def enter(self, e):
-        if right_down(e) or left_up(e):
-            self.boy.dir = 1
-        elif left_down(e) or right_up(e):
-            self.boy.dir = -1
+        if right_down(e) or left_up(e) or up_up(e) or down_up(e):
+            self.boy.xdir = 1
+        elif left_down(e) or right_up(e) or up_up(e) or down_up(e):
+            self.boy.xdir = -1
+        elif up_down(e) or right_up(e) or left_up(e) or down_up(e):
+            self.boy.ydir = 1
+        elif down_down(e) or right_up(e) or left_up(e) or up_up(e):
+            self.boy.ydir = -1
     def exit(self, e):
-        pass
+        self.boy.xdir = 0
+        self.boy.ydir = 0
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 8
-        self.boy.x = self.boy.x + self.boy.dir * 5
+        self.boy.x = self.boy.x + self.boy.xdir * 5
+        self.boy.y = self.boy.y + self.boy.ydir * 5
     def draw(self):
         self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
 
@@ -64,15 +76,16 @@ class Boy:
         self.walk_image = load_image('character_Walk.png')
         self.idle_image = load_image('character_Idle.png')
         self.frame = 0
-        self.dir = 0
+        self.xdir = 0
+        self.ydir = 0
 
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
-                self.IDLE : {right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK},
-                self.WALK : {space_down: self.IDLE, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE}
+                self.IDLE : {right_down: self.WALK, left_down: self.WALK, right_up: self.WALK, left_up: self.WALK, up_down: self.WALK, down_down: self.WALK, up_up: self.WALK, down_up: self.WALK},
+                self.WALK : {space_down: self.IDLE, right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE, up_up: self.IDLE, down_up: self.IDLE, up_down: self.IDLE, down_down: self.IDLE}
             }
         )
 
