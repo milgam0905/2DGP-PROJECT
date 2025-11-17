@@ -46,7 +46,10 @@ class Idle:
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 6
     def draw(self):
-        self.boy.idle_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        if self.boy.face_dir == 1:
+            self.boy.idle_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        else:
+            self.boy.idle_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 class Walk:
     def __init__(self, boy):
@@ -78,16 +81,19 @@ class Attack1:
     def __init__(self, boy):
         self.boy = boy
     def enter(self, e):
-        pass
-    def exit(self, e):
         self.boy.frame = 0
+    def exit(self, e):
+        pass
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 7
         delay(0.2)
         if self.boy.frame == 6:
             self.boy.state_machine.handle_state_event(('TIMEOUT', None))
     def draw(self):
-        self.boy.attack1_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        if self.boy.face_dir == 1:
+            self.boy.attack1_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        else:
+            self.boy.attack1_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 class Boy:
     def __init__(self):
