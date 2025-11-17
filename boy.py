@@ -6,7 +6,11 @@ import game_framework
 
 from state_machine import StateMachine
 
-class Idle::
+
+def space_down(e): # e is space down ?
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
+class Idle:
     def __init__(self, boy):
         self.boy = boy
     def enter(self, e):
@@ -17,7 +21,7 @@ class Idle::
         self.boy.frame = (self.boy.frame + 1) % 6
         delay(0.2)
     def draw(self):
-        self.boy.idle_image.clip_draw(self.boy,frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        self.boy.idle_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
 
 class Walk:
     def __init__(self, boy):
@@ -46,8 +50,8 @@ class Boy:
         self.state_machine = StateMachine(
             self.IDLE,
             {
-                self.IDLE : { 'walk' : self.WALK },
-                self.WALK : { 'idle' : self.IDLE}
+                self.IDLE : {space_down: self.WALK},
+                self.WALK : {space_down: self.IDLE}
             }
         )
 
@@ -61,4 +65,4 @@ class Boy:
     def handle_collision(self, group, other):
         pass
     def handle_event(self, event):
-        pass
+        self.state_machine.handle_state_event(('INPUT', event))
