@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/boy.py">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/boy.py" />
+              <option name="originalContent" value="from pico2d import *&#10;&#10;class Boy:&#10;    def __init__(self):&#10;        self.x = 800&#10;        self.y = 300&#10;        self.image = load_image('character_Walk.png')&#10;        self.frame = 0&#10;&#10;    def draw(self):&#10;        # frame은 인덱스(0..7) 이므로, 실제 픽셀 좌표로 변환해서 전달해야 합니다.&#10;        self.image.clip_draw(self.frame * 128, 0, 128, 128, self.x, self.y)&#10;&#10;    def update(self):&#10;        self.frame = (self.frame + 1) % 8&#10;        delay(0.2)&#10;&#10;    def get_bb(self):&#10;        return self.x - 25, self.y - 50, self.x + 25, self.y + 50&#10;    def handle_collision(self, group, other):&#10;        pass&#10;    def handle_event(self, event):&#10;        pass" />
+              <option name="updatedContent" value="from pico2d import *&#10;&#10;class Boy:&#10;    def __init__(self):&#10;        self.x = 800&#10;        self.y = 300&#10;        self.image = load_image('character_Walk.png')&#10;        self.frame = 0&#10;&#10;    def draw(self):&#10;        # frame은 인덱스(0..7) 이므로, 실제 픽셀 좌표로 변환해서 전달해야 합니다.&#10;        self.image.clip_draw(self.frame * 128, 0, 128, 128, self.x, self.y)&#10;&#10;    def update(self):&#10;        self.frame = (self.frame + 1) % 8&#10;        delay(0.2)&#10;&#10;    def get_bb(self):&#10;        return self.x - 25, self.y - 50, self.x + 25, self.y + 50&#10;    def handle_collision(self, group, other):&#10;        pass&#10;    def handle_event(self, event):&#10;        pass" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
