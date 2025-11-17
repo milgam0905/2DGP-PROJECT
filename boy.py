@@ -52,9 +52,9 @@ class Walk:
 
     def enter(self, e):
         if right_down(e) or left_up(e) or up_up(e) or down_up(e):
-            self.boy.xdir = 1
+            self.boy.xdir = self.boy.face_dir = 1
         elif left_down(e) or right_up(e) or up_up(e) or down_up(e):
-            self.boy.xdir = -1
+            self.boy.xdir = self.boy.face_dir = -1
         elif up_down(e) or right_up(e) or left_up(e) or down_up(e):
             self.boy.ydir = 1
         elif down_down(e) or right_up(e) or left_up(e) or up_up(e):
@@ -67,7 +67,10 @@ class Walk:
         self.boy.x = self.boy.x + self.boy.xdir * 5
         self.boy.y = self.boy.y + self.boy.ydir * 5
     def draw(self):
-        self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
+        if self.boy.face_dir == 1:
+            self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y, 128, 128)
+        else:
+            self.boy.walk_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
 class Boy:
     def __init__(self):
@@ -78,6 +81,7 @@ class Boy:
         self.frame = 0
         self.xdir = 0
         self.ydir = 0
+        self.face_dir = 1
 
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
