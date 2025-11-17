@@ -3,11 +3,10 @@ from pico2d import *
 
 import game_framework
 import game_world
-
 from boy import Boy
-from grass import Grass
-from ball import Ball
-from zombie import Zombie
+
+
+from game_world import add_object
 
 boy = None
 
@@ -25,30 +24,8 @@ def init():
     global boy
     global balls
 
-    grass = Grass()
-    game_world.add_object(grass, 0)
-    game_world.add_collision_pair('grass:ball', grass, None)
-
     boy = Boy()
-    game_world.add_object(boy, 1)
-
-    balls = [Ball(random.randint(100, 1600 - 100), 60, 0) for _ in range(30)]
-    game_world.add_objects(balls, 1)
-
-    #소년과 볼 사이에 대한 충돌검사가 필요하다는 정보를 추가
-    game_world.add_collision_pair('boy:ball', boy, None)
-    for ball in balls:
-        game_world.add_collision_pair('boy:ball', None, ball)
-
-    zombies = [Zombie() for _ in range(4)]
-    game_world.add_objects(zombies, 1)
-
-    for zombie in zombies:
-        game_world.add_collision_pair('zombie:ball', zombie, None)
-
-    game_world.add_collision_pair('zombie:boy', None, boy)
-    for zombie in zombies:
-        game_world.add_collision_pair('zombie:boy', zombie, None)
+    add_object(boy)
 
 
 def update():
