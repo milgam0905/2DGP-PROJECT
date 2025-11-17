@@ -7,7 +7,7 @@ import game_framework
 from state_machine import StateMachine
 
 
-def space_down(e): # e is space down ?
+def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 def right_down(e):
@@ -56,14 +56,7 @@ class Walk:
         self.boy = boy
 
     def enter(self, e):
-        if right_down(e) or left_up(e) or up_up(e) or down_up(e):
-            self.boy.xdir = self.boy.face_dir = 1
-        elif left_down(e) or right_up(e) or up_up(e) or down_up(e):
-            self.boy.xdir = self.boy.face_dir = -1
-        elif up_down(e) or right_up(e) or left_up(e) or down_up(e):
-            self.boy.ydir = 1
-        elif down_down(e) or right_up(e) or left_up(e) or up_up(e):
-            self.boy.ydir = -1
+        self.boy.update_direction()
     def exit(self, e):
         self.boy.xdir = 0
         self.boy.ydir = 0
@@ -73,7 +66,7 @@ class Walk:
         self.boy.y = self.boy.y + self.boy.ydir * 5
     def draw(self):
         if self.boy.face_dir == 1:
-            self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y, 128, 128)
+            self.boy.walk_image.clip_draw(self.boy.frame * 128, 0, 128, 128, self.boy.x, self.boy.y)
         else:
             self.boy.walk_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
@@ -95,6 +88,7 @@ class Attack1:
         else:
             self.boy.attack1_image.clip_composite_draw(self.boy.frame * 128, 0, 128, 128, 0, 'h', self.boy.x, self.boy.y, 128, 128)
 
+
 class Boy:
     def __init__(self):
         self.x = 800
@@ -106,6 +100,9 @@ class Boy:
         self.xdir = 0
         self.ydir = 0
         self.face_dir = 1
+
+
+        self.keys = set()
 
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
@@ -119,14 +116,55 @@ class Boy:
             }
         )
 
+    def update_direction(self):
+        if 'RIGHT' in self.keys and 'LEFT' not in self.keys:
+            self.xdir = 1
+            self.face_dir = 1
+        elif 'LEFT' in self.keys and 'RIGHT' not in self.keys:
+            self.xdir = -1
+            self.face_dir = -1
+        else:
+            self.xdir = 0
+
+        if 'UP' in self.keys and 'DOWN' not in self.keys:
+            self.ydir = 1
+        elif 'DOWN' in self.keys and 'UP' not in self.keys:
+            self.ydir = -1
+        else:
+            self.ydir = 0
+
     def draw(self):
         self.state_machine.draw()
+
     def update(self):
         self.state_machine.update()
 
     def get_bb(self):
         return self.x - 25, self.y - 50, self.x + 25, self.y + 50
+
     def handle_collision(self, group, other):
         pass
+
     def handle_event(self, event):
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_RIGHT:
+                self.keys.add('RIGHT')
+            elif event.key == SDLK_LEFT:
+                self.keys.add('LEFT')
+            elif event.key == SDLK_UP:
+                self.keys.add('UP')
+            elif event.key == SDLK_DOWN:
+                self.keys.add('DOWN')
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_RIGHT:
+                self.keys.discard('RIGHT')
+            elif event.key == SDLK_LEFT:
+                self.keys.discard('LEFT')
+            elif event.key == SDLK_UP:
+                self.keys.discard('UP')
+            elif event.key == SDLK_DOWN:
+                self.keys.discard('DOWN')
+
+        self.update_direction()
+
         self.state_machine.handle_state_event(('INPUT', event))
