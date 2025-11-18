@@ -83,7 +83,6 @@ class Attack1:
         pass
     def do(self):
         self.boy.frame = (self.boy.frame + 6 * 2 * game_framework.frame_time) % 7
-        delay(0.2)
         if self.boy.frame > 5:
             self.boy.state_machine.handle_state_event(('TIMEOUT', None))
     def draw(self):
@@ -123,7 +122,7 @@ class Boy:
             {
                 self.IDLE: {space_down: self.ATTACK1, any_key_down: self.WALK},
                 self.WALK: {space_down: self.ATTACK1, all_keys_up: self.IDLE},
-                self.ATTACK1: {time_out: self.IDLE}
+                self.ATTACK1: {time_out: self.WALK}
             }
         )
 
