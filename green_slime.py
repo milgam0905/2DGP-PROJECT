@@ -21,7 +21,7 @@ class GreenSlime:
         self.frame = (self.frame + 10 * game_framework.frame_time) % 4
 
     def draw(self):
-        if self.dir == 1:
-            GreenSlime.image.clip_draw(int(self.frame) * 32, 0, 32, 32, self.x, self.y)
+        if self.dir == -1:
+            GreenSlime.image.clip_draw(int(self.frame) * 21, 0, 21, 21, self.x, self.y)
         else:
-            GreenSlime.image.clip_composite_draw(int(self.frame) * 32, 0, 32, 32, 0, 'h', self.x, self.y, 32, 32)
+            GreenSlime.image.clip_composite_draw(int(self.frame) * 21, 0, 21, 21, 0, 'h', self.x, self.y, 21, 21)

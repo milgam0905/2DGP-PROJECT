@@ -4,6 +4,7 @@ from pico2d import *
 import game_framework
 import game_world
 from boy import Boy
+from green_slime import GreenSlime
 
 
 from game_world import add_object
@@ -26,6 +27,9 @@ def init():
 
     boy = Boy()
     add_object(boy)
+
+    green_slime = GreenSlime()
+    add_object(green_slime)
 
 
 def update():
